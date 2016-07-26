@@ -208,13 +208,7 @@ Example:
           // var defs = container.selectAll('defs').data([data[0]]).enter().append('defs');
           var colorMask = d3.select(this).select('#colorMask');
 
-          var tooltip = container.selectAll('g.tooltip').data([data[0]]);
-          var tt = tooltip.enter()
-            .append('g')
-            .classed('tooltip', true);
-
-          tt.append('rect').classed('tooltip', true);
-          tt.append('text').classed('tooltip', true);
+          
 
           // allow simple notation
           data = data.map(function(datum) {
@@ -272,7 +266,7 @@ Example:
 
             colorCircles.enter().append('circle')
               .classed('axis-colors', 1)
-              .attr({
+              .attrs({
                 fill: function(d, i) {
                   return cfg.axisColors(i);
                 },
@@ -292,8 +286,9 @@ Example:
 
           var levelGroups = container.selectAll('g.level-group').data(levelFactors);
 
-          levelGroups.enter().append('g');
           levelGroups.exit().remove();
+          
+          levelGroups = levelGroups.enter().append('g');
 
           levelGroups.attr('class', function(d, i) {
             return 'level-group level-group-' + i;
@@ -305,8 +300,8 @@ Example:
             });
           });
 
-          levelLine.enter().append('line');
           levelLine.exit().remove();
+          levelLine = levelLine.enter().append('line');
 
           if (cfg.levelTick) {
             levelLine
@@ -364,15 +359,16 @@ Example:
           if (cfg.axisLine || cfg.axisText) {
             var axis = container.selectAll('.axis').data(allAxis);
 
-            var newAxis = axis.enter().append('g');
+            axis.exit().remove();
+
+            axis = axis.enter().append('g');
             if (cfg.axisLine) {
-              newAxis.append('line');
+              axis.append('line');
             }
             if (cfg.axisText) {
-              newAxis.append('text');
+              axis.append('text');
             }
 
-            axis.exit().remove();
 
             axis.attr('class', function(d) {
               // console.info('AXIS', d);
@@ -444,10 +440,10 @@ Example:
             .transition().duration(cfg.transitionDuration)
             .remove();
 
-          polygon.enter().append('polygon')
-            .merge(polygon)
-            .classed('area', 1)
+          polygon = polygon.enter().append('polygon')
             .classed('d3-enter', 1)
+            .classed('area', 1)
+            .merge(polygon)
             .on('mouseover', function(dd) {
               d3.event.stopPropagation();
               container.classed('focus', 1);
@@ -463,14 +459,9 @@ Example:
 
 
           polygon
+            .classed('d3-exit', 0)
             .each(function(d, i) {
-              // var classed = {
-              // 'd3-exit': 0
-              // }; // if exiting element is being reused
-              // classed['radar-chart-serie' + i] = 1;
-              var sel = d3.select(this)
-                .classed('d3-exit', 0)
-                .classed('radar-chart-serie' + i, 1);
+              var sel = d3.select(this).classed('radar-chart-serie' + i, 1);
               if (d.className) {
                 sel.classed(d.className, 1);
               }
@@ -489,7 +480,7 @@ Example:
                 return [p.x, p.y].join(',');
               }).join(' ');
             })
-            .each('start', function() {
+            .on('start', function() {
               d3.select(this).classed('d3-enter', 0); // trigger css transition
             });
 
@@ -497,14 +488,16 @@ Example:
 
             var circleGroups = container.selectAll('g.circle-group').data(data, cfg.axisJoin);
 
-            circleGroups.enter()
+            circleGroups.exit()
+              .classed('d3-exit', 1) // trigger css transition
+              .transition().duration(cfg.transitionDuration).remove();
+
+            circleGroups = circleGroups.enter()
               .append('g')
               // .filter(function(d){return d.circles !== false;})
               .classed('circle-group', 1)
               .classed('d3-enter', 1);
-            circleGroups.exit()
-              .classed('d3-exit', 1) // trigger css transition
-              .transition().duration(cfg.transitionDuration).remove();
+            
 
             circleGroups
               .each(function(d) {
@@ -517,7 +510,7 @@ Example:
                 }
               })
               .transition().duration(cfg.transitionDuration)
-              .each('start', function() {
+              .on('start', function() {
                 d3.select(this).classed('d3-enter', 0); // trigger css transition
               });
 
@@ -531,14 +524,14 @@ Example:
                 });
               });
 
-            circle.enter().append('circle')
-              // .filter(function(d) { 
-              // console.info("FILTER", d);
-              // return true
-              // })
-              // .attr('class', function(d){return 'circle '})  
-              .classed('circle', 1)
+            circle.exit()
+              .classed('d3-exit', 1) // trigger css transition
+              .transition().duration(cfg.transitionDuration).remove();
+
+            circle = circle.enter().append('circle')
               .classed('d3-enter', 1)
+              .classed('circle', 1)
+              .merge(circle)
               .on('mouseover', function(dd) {
                 d3.event.stopPropagation();
                 setTooltip(tooltip, cfg.tooltipFormatValue(dd[0].value));
@@ -557,11 +550,9 @@ Example:
                 //No idea why previous line breaks tooltip hovering area after hoverin point.
               });
 
-            circle.exit()
-              .classed('d3-exit', 1) // trigger css transition
-              .transition().duration(cfg.transitionDuration).remove();
 
             circle
+              .classed('d3-exit', 0)
               .each(function(d) {
                 // var classed = {
                 //   'd3-exit': 0
@@ -569,7 +560,6 @@ Example:
                 // classed['radar-chart-serie' + d[1]] = 1;
                 // classed['radar-axis-' + d[0].axis] = 1;
                 d3.select(this)
-                  .classed('d3-exit', 0)
                   .classed('radar-chart-serie' + d[1], 1)
                   .classed('radar-axis-' + d[0].axis, 1);
               })
@@ -589,20 +579,29 @@ Example:
               .attr('cy', function(d) {
                 return d[0].y;
               })
-              .each('start', function() {
+              .on('start', function() {
                 d3.select(this).classed('d3-enter', 0); // trigger css transition
               });
+    
+          var tooltip = container.selectAll('g.tooltip').data([data[0]]);
+          tooltip = tooltip.enter()
+            .merge(tooltip)
+            .append('g')
+            .classed('tooltip', true);
+
+          tooltip.append('rect').classed('tooltip', true);
+          tooltip.append('text').classed('tooltip', true);
 
             //Make sure layer order is correct
-            var poly_node = polygon.node();
-            poly_node.parentNode.appendChild(poly_node);
+            // var poly_node = polygon.node();
+            // poly_node.parentNode.appendChild(poly_node);
 
-            var cg_node = circleGroups.node();
-            cg_node.parentNode.appendChild(cg_node);
+            // var cg_node = circleGroups.node();
+            // cg_node.parentNode.appendChild(cg_node);
 
-            // ensure tooltip is upmost layer
-            var tooltipEl = tooltip.node();
-            tooltipEl.parentNode.appendChild(tooltipEl);
+            // // ensure tooltip is upmost layer
+            // var tooltipEl = tooltip.node();
+            // tooltipEl.parentNode.appendChild(tooltipEl);
           }
         });
       }

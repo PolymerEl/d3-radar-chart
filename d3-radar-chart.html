@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../d3-zelement/d3-element.html">
+<link rel="import" href="../d3-bundle-element/d3-bundle-element.html">
 <link rel="import" href="tag-behavior.html">
 <!--
 An element providing a solution to no problem in particular.
@@ -35,11 +35,11 @@ Example:
     stroke-width: 1;
   }
   
-   ::content .radar-chart .axis line[filter] {
+  ::content .radar-chart .axis line[filter] {
     /*stroke: grey;*/
     stroke-width: var(--line-filter-width, 2);
-
   }
+  
   ::content .radar-chart .axis .legend {
     /*    font-family: sans-serif;
     font-size: 10px;*/
@@ -128,7 +128,6 @@ Example:
         </filter>
       </defs>
       <g id="radarContainer">
-        
       </g>
     </svg>
   </template>
@@ -144,14 +143,14 @@ Example:
       factor: 0.95,
       factorLegend: 1,
       axisValues: false,
-      axisColors: d3.scale.ordinal().range(['green', 'orange', 'red']),
+      axisColors: d3.scaleOrdinal().range(['green', 'orange', 'red']),
       levels: 3,
       levelTick: false,
       TickLength: 10,
       maxValue: 0,
       minValue: 0,
       radians: 2 * Math.PI,
-      color: d3.scale.category10(),
+      color: d3.scaleOrdinal(d3.schemeCategory10),
       axisLine: true,
       axisText: true,
       circles: true,
@@ -379,7 +378,7 @@ Example:
               // console.info('AXIS', d);
               return 'axis ' + d.key;
             });
-            
+
             if (cfg.axisLine) {
               var axisLine = axis.select('line')
                 .attr('x1', cfg.w / 2)
@@ -390,7 +389,7 @@ Example:
                 .attr('y2', function(d, i) {
                   return (cfg.h / 2 - radius2) + getVerticalPosition(i, radius2, cfg.factor);
                 });
-              if(cfg.axisValues && cfg.axisValues.length ) {
+              if (cfg.axisValues && cfg.axisValues.length) {
                 axisLine
                   .attr('filter', 'url(#colorline)');
               }
@@ -427,13 +426,28 @@ Example:
               axis.y = (cfg.h / 2 - radius2) + getVerticalPosition(i, radius2, (parseFloat(Math.max(axis.value - cfg.minValue, 0)) / maxValue) * cfg.factor);
             });
           });
+
+          // var circle = svg.selectAll("circle").data(data) // UPDATE
+          //   .style("fill", "blue");
+
+          // circle.exit().remove(); // EXIT
+
+          // circle.enter().append("circle") // ENTER
+          //   .style("fill", "green")
+          //   .merge(circle) // ENTER + UPDATE
+          //   .style("stroke", "black");
+
           var polygon = container.selectAll('.area').data(data, cfg.axisJoin);
 
+          polygon.exit()
+            .classed('d3-exit', 1) // trigger css transition
+            .transition().duration(cfg.transitionDuration)
+            .remove();
+
           polygon.enter().append('polygon')
-            .classed({
-              area: 1,
-              'd3-enter': 1
-            })
+            .merge(polygon)
+            .classed('area', 1)
+            .classed('d3-enter', 1)
             .on('mouseover', function(dd) {
               d3.event.stopPropagation();
               container.classed('focus', 1);
@@ -447,21 +461,19 @@ Example:
               setTooltip(tooltip, false);
             });
 
-          polygon.exit()
-            .classed('d3-exit', 1) // trigger css transition
-            .transition().duration(cfg.transitionDuration)
-            .remove();
 
           polygon
             .each(function(d, i) {
-              var classed = {
-                'd3-exit': 0
-              }; // if exiting element is being reused
-              classed['radar-chart-serie' + i] = 1;
+              // var classed = {
+              // 'd3-exit': 0
+              // }; // if exiting element is being reused
+              // classed['radar-chart-serie' + i] = 1;
+              var sel = d3.select(this)
+                .classed('d3-exit', 0)
+                .classed('radar-chart-serie' + i, 1);
               if (d.className) {
-                classed[d.className] = 1;
+                sel.classed(d.className, 1);
               }
-              d3.select(this).classed(classed);
             })
             // styles should only be transitioned with css
             .style('stroke', function(d, i) {
@@ -488,23 +500,21 @@ Example:
             circleGroups.enter()
               .append('g')
               // .filter(function(d){return d.circles !== false;})
-              .classed({
-                'circle-group': 1,
-                'd3-enter': 1
-              });
+              .classed('circle-group', 1)
+              .classed('d3-enter', 1);
             circleGroups.exit()
               .classed('d3-exit', 1) // trigger css transition
               .transition().duration(cfg.transitionDuration).remove();
 
             circleGroups
               .each(function(d) {
-                var classed = {
-                  'd3-exit': 0
-                }; // if exiting element is being reused
+                // var classed = {
+                //   'd3-exit': 0
+                // }; // if exiting element is being reused
+                var sel = d3.select(this).classed('d3-exit', 0);
                 if (d.className) {
-                  classed[d.className] = 1;
+                  sel.classed(d.className, 1);
                 }
-                d3.select(this).classed(classed);
               })
               .transition().duration(cfg.transitionDuration)
               .each('start', function() {
@@ -527,10 +537,8 @@ Example:
               // return true
               // })
               // .attr('class', function(d){return 'circle '})  
-              .classed({
-                circle: 1,
-                'd3-enter': 1
-              })
+              .classed('circle', 1)
+              .classed('d3-enter', 1)
               .on('mouseover', function(dd) {
                 d3.event.stopPropagation();
                 setTooltip(tooltip, cfg.tooltipFormatValue(dd[0].value));
@@ -555,12 +563,15 @@ Example:
 
             circle
               .each(function(d) {
-                var classed = {
-                  'd3-exit': 0
-                }; // if exit element reused
-                classed['radar-chart-serie' + d[1]] = 1;
-                classed['radar-axis-' + d[0].axis] = 1;
-                d3.select(this).classed(classed);
+                // var classed = {
+                //   'd3-exit': 0
+                // }; // if exit element reused
+                // classed['radar-chart-serie' + d[1]] = 1;
+                // classed['radar-axis-' + d[0].axis] = 1;
+                d3.select(this)
+                  .classed('d3-exit', 0)
+                  .classed('radar-chart-serie' + d[1], 1)
+                  .classed('radar-axis-' + d[0].axis, 1);
               })
               // styles should only be transitioned with css
               .attr('stroke', function(d) {
@@ -639,7 +650,7 @@ Example:
           maxValue: 100,
           minValue: 0,
           radians: 2 * Math.PI,
-          color: d3.scale.category10(),
+          color: d3.scaleOrdinal(d3.schemeCategory10),
           axisLine: true,
           axisText: true,
           circles: true,

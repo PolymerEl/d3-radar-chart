@@ -1,0 +1,97 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>seed-element Demo</title>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../d3-radar-chart.html">
+  <style type="text/css" media="screen">
+    .radar-content {
+      width: 600px;
+    }  
+  </style>
+</head>
+
+<body>
+  <p>An example of <code>&lt;radar-chart&gt;</code>:</p>
+  <button>Say Something</button>
+  <div class="radar-content">
+      <d3-radar-chart></d3-radar-chart>
+  </div>
+  <script>
+  var radar = document.querySelector('d3-radar-chart');
+  radar.set('options.maxValue', 20);
+  // radar.set('options.factorLegend', 1.1);
+
+  radar.data = [{
+      className: 'germany', // optional can be used for styling
+      axes: [{
+        axis: 'strength',
+        value: 13
+      }, {
+        axis: 'intelligence',
+        xOffset: -20,
+        value: 6
+      }, {
+        axis: 'charisma',
+        value: 5
+      }, {
+        axis: 'dexterity',
+        value: 9
+      }, {
+        axis: 'luck',
+        value: 2
+      }]
+    }, {
+      className: 'france', // optional can be used for styling
+      circles : false,
+      axes: [{
+        axis: 'strength',
+        value: 19
+      }, {
+        axis: 'intelligence',
+        value: 8
+      }, {
+        axis: 'charisma',
+        value: 15
+      }, {
+        axis: 'dexterity',
+        value: 15
+      }, {
+        axis: 'luck',
+        value: 12
+      }]
+    }, {
+      className: 'argentina',
+      axes: [{
+        axis: 'strength',
+        value: 6
+      }, {
+        axis: 'intelligence',
+        value: 7
+      }, {
+        axis: 'charisma',
+        value: 10
+      }, {
+        axis: 'dexterity',
+        value: 13
+      }, {
+        axis: 'luck',
+        value: 9
+      }]
+    }];
+  </script>
+</body>
+
+</html>

@@ -143,14 +143,14 @@ Example:
       factor: 0.95,
       factorLegend: 1,
       axisValues: false,
-      axisColors: d3.scaleOrdinal().range(['green', 'orange', 'red']),
+      axisColors: d4.scaleOrdinal().range(['green', 'orange', 'red']),
       levels: 3,
       levelTick: false,
       TickLength: 10,
       maxValue: 0,
       minValue: 0,
       radians: 2 * Math.PI,
-      color: d3.scaleOrdinal(d3.schemeCategory10),
+      color: d4.scaleOrdinal(d4.schemeCategory10),
       axisLine: true,
       axisText: true,
       circles: true,
@@ -184,7 +184,7 @@ Example:
           tooltip.classed('visible', 1);
 
           var container = tooltip.node().parentNode;
-          var coords = d3.mouse(container);
+          var coords = d4.mouse(container);
 
           tooltip.select('text').classed('visible', 1).style('fill', cfg.tooltipColor);
           var padding = 5;
@@ -204,9 +204,9 @@ Example:
 
       function radar(selection) {
         selection.each(function(data) {
-          var container = d3.select(this).select('#radarContainer');
+          var container = d4.select(this).select('#radarContainer');
           // var defs = container.selectAll('defs').data([data[0]]).enter().append('defs');
-          var colorMask = d3.select(this).select('#colorMask');
+          var colorMask = d4.select(this).select('#colorMask');
 
           
 
@@ -220,8 +220,8 @@ Example:
             return datum;
           });
 
-          var maxValue = Math.max(cfg.maxValue, d3.max(data, function(d) {
-            return d3.max(d.axes, function(o) {
+          var maxValue = Math.max(cfg.maxValue, d4.max(data, function(d) {
+            return d4.max(d.axes, function(o) {
               return o.value;
             });
           }));
@@ -280,7 +280,7 @@ Example:
           }
 
           // levels && axises
-          var levelFactors = d3.range(0, cfg.levels).map(function(level) {
+          var levelFactors = d4.range(0, cfg.levels).map(function(level) {
             return radius * ((level + 1) / cfg.levels);
           });
 
@@ -295,7 +295,7 @@ Example:
           });
 
           var levelLine = levelGroups.selectAll('.level').data(function(levelFactor) {
-            return d3.range(0, total).map(function() {
+            return d4.range(0, total).map(function() {
               return levelFactor;
             });
           });
@@ -445,15 +445,15 @@ Example:
             .classed('area', 1)
             .merge(polygon)
             .on('mouseover', function(dd) {
-              d3.event.stopPropagation();
+              d4.event.stopPropagation();
               container.classed('focus', 1);
-              d3.select(this).classed('focused', 1);
+              d4.select(this).classed('focused', 1);
               setTooltip(tooltip, cfg.tooltipFormatClass(dd.className));
             })
             .on('mouseout', function() {
-              d3.event.stopPropagation();
+              d4.event.stopPropagation();
               container.classed('focus', 0);
-              d3.select(this).classed('focused', 0);
+              d4.select(this).classed('focused', 0);
               setTooltip(tooltip, false);
             });
 
@@ -461,7 +461,7 @@ Example:
           polygon
             .classed('d3-exit', 0)
             .each(function(d, i) {
-              var sel = d3.select(this).classed('radar-chart-serie' + i, 1);
+              var sel = d4.select(this).classed('radar-chart-serie' + i, 1);
               if (d.className) {
                 sel.classed(d.className, 1);
               }
@@ -481,7 +481,7 @@ Example:
               }).join(' ');
             })
             .on('start', function() {
-              d3.select(this).classed('d3-enter', 0); // trigger css transition
+              d4.select(this).classed('d3-enter', 0); // trigger css transition
             });
 
           if (cfg.circles && cfg.radius) {
@@ -504,14 +504,14 @@ Example:
                 // var classed = {
                 //   'd3-exit': 0
                 // }; // if exiting element is being reused
-                var sel = d3.select(this).classed('d3-exit', 0);
+                var sel = d4.select(this).classed('d3-exit', 0);
                 if (d.className) {
                   sel.classed(d.className, 1);
                 }
               })
               .transition().duration(cfg.transitionDuration)
               .on('start', function() {
-                d3.select(this).classed('d3-enter', 0); // trigger css transition
+                d4.select(this).classed('d3-enter', 0); // trigger css transition
               });
 
             var circle = circleGroups
@@ -534,7 +534,7 @@ Example:
               .classed('circle', 1)
               .merge(circle)
               .on('mouseover', function(dd) {
-                d3.event.stopPropagation();
+                d4.event.stopPropagation();
                 setTooltip(tooltip, cfg.tooltipFormatValue(dd[0].value));
                 Polymer.Base.fire('radar-over', dd, {
                   node: this
@@ -543,7 +543,7 @@ Example:
                 //container.select('.area.radar-chart-serie'+dd[1]).classed('focused', 1);
               })
               .on('mouseout', function(dd) {
-                d3.event.stopPropagation();
+                d4.event.stopPropagation();
                 setTooltip(tooltip, false);
                 container.classed('focus', 0);
 
@@ -560,7 +560,7 @@ Example:
                 // }; // if exit element reused
                 // classed['radar-chart-serie' + d[1]] = 1;
                 // classed['radar-axis-' + d[0].axis] = 1;
-                d3.select(this)
+                d4.select(this)
                   .classed('radar-chart-serie' + d[1], 1)
                   .classed('radar-axis-' + d[0].axis, 1);
               })
@@ -581,7 +581,7 @@ Example:
                 return d[0].y;
               })
               .on('start', function() {
-                d3.select(this).classed('d3-enter', 0); // trigger css transition
+                d4.select(this).classed('d3-enter', 0); // trigger css transition
               });
     
           var tooltip = container.selectAll('g.tooltip').data([data[0]]);
@@ -614,7 +614,7 @@ Example:
         if (arguments.length > 1) {
           cfg[arguments[0]] = arguments[1];
         } else {
-          d3.entries(value || {}).forEach(function(option) {
+          d4.entries(value || {}).forEach(function(option) {
             cfg[option.key] = option.value;
           });
         }
@@ -650,7 +650,7 @@ Example:
           maxValue: 100,
           minValue: 0,
           radians: 2 * Math.PI,
-          color: d3.scaleOrdinal(d3.schemeCategory10),
+          color: d4.scaleOrdinal(d4.schemeCategory10),
           axisLine: true,
           axisText: true,
           circles: true,
@@ -688,7 +688,7 @@ Example:
 
       this.set('_viewBox', '0 0 ' + cfg.w + ' ' + cfg.h);
 
-      var d3Svg = d3.select(this.$.svg);
+      var d3Svg = d4.select(this.$.svg);
 
       d3Svg.selectAll('#radarContainer > *, #colorMask > *').remove();
       d3Svg

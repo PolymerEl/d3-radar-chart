@@ -11,8 +11,8 @@
     "polymer",
     "d3.js",
     "charts",
-    "chart"
-    "radar"
+    "chart",
+    "radar",
     "polymer",
     "analytics",
     "mapping",

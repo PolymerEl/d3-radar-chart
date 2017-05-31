@@ -28,70 +28,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <div class="vertical-section-container centered">
     <h3>An example of <code>&lt;d3-radar-chart&gt;</code></h3>
     <demo-snippet>
-      <d3-radar-chart></d3-radar-chart>
+    <template>
+    <template is="dom-bind" id="app">
+      <d3-radar-chart id="radar"
+        options='{"maxValue": 20}'
+        data='[{"className": "france","circles": true,"axes": [{"axis": "strength","value": 19}, {"axis": "intelligence","value": 8}, {"axis": "charisma","value": 15}, {"axis": "dexterity","value": 15}, {"axis": "luck","value": 12}]  }, {"className": "germany", "axes": [{"axis": "strength","value": 13}, {"axis": "intelligence","xOffset": -20,"value": 6}, {"axis": "charisma","value": 5}, {"axis": "dexterity","value": 9}, {"axis": "luck","value": 2}]}]'
+      ></d3-radar-chart>
+    </template>
+    </template>
     </demo-snippet>
   </div>
   <script>
-  var radar = document.querySelector('d3-radar-chart');
-  radar.set('options.maxValue', 20);
-
-  radar.data = [{
-    className: 'france', // optional can be used for styling
-    circles: false,
-    axes: [{
-      axis: 'strength',
-      value: 19
-    }, {
-      axis: 'intelligence',
-      value: 8
-    }, {
-      axis: 'charisma',
-      value: 15
-    }, {
-      axis: 'dexterity',
-      value: 15
-    }, {
-      axis: 'luck',
-      value: 12
-    }]
-  }, {
-    className: 'germany', // optional can be used for styling
-    axes: [{
-      axis: 'strength',
-      value: 13
-    }, {
-      axis: 'intelligence',
-      xOffset: -20,
-      value: 6
-    }, {
-      axis: 'charisma',
-      value: 5
-    }, {
-      axis: 'dexterity',
-      value: 9
-    }, {
-      axis: 'luck',
-      value: 2
-    }]
-  }, {
-    className: 'argentina',
-    axes: [{
-      axis: 'strength',
-      value: 6
-    }, {
-      axis: 'intelligence',
-      value: 7
-    }, {
-      axis: 'charisma',
-      value: 10
-    }, {
-      axis: 'dexterity',
-      value: 13
-    }, {
-      axis: 'luck',
-      value: 9
-    }]
-  }];
+  window.addEventListener('WebComponentsReady', function() {
+  var radar = app.$.radar;
+  // radar.set('options.maxValue', 20);
+  radar.async(function(){
+    radar.set('data.0.axes.0.value', 6);
+    
+  }, 3000);
+  
+});
   </script>
 </body>
 

@@ -206,6 +206,9 @@ Example:
 
       function radar(selection) {
         selection.each(function(data) {
+          if(!data) {
+            return;
+          }
           var container = d3.select(this).select('#radarContainer');
           // var defs = container.selectAll('defs').data([data[0]]).enter().append('defs');
           var colorMask = d3.select(this).select('#colorMask');
@@ -618,6 +621,9 @@ Example:
        */
       data: {
         type: Array
+        // value: function() {
+        //   return [];
+        // }
       },
 
       /* 
@@ -667,7 +673,7 @@ Example:
     },
     
     observers: [
-      'draw(data, options)'
+      'draw(data.*, options)'
     ],
      
     behaviors: [
@@ -686,7 +692,7 @@ Example:
 
       d3Svg.selectAll('#radarContainer > *, #colorMask > *').remove();
       d3Svg
-        .datum(d)
+        .datum(this.data)
         .call(chart);
     }
 
